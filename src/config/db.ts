@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import config from ".";
 
-const pool = new Pool({ connectionString: config.connecting_str });
+export const pool = new Pool({ connectionString: config.connecting_str });
 
 const initDB = async () => {
   await pool.query(`
@@ -13,9 +13,8 @@ const initDB = async () => {
         password TEXT NOT NULL,
         CHECK (char_length(password) >= 6),
         phone VARCHAR(20) NOT NULL,
-        role TEXT,
+        role VARCHAR(15),
         CHECK (role IN ('admin', 'customer'))
-
         )
         `);
 
@@ -28,8 +27,8 @@ const initDB = async () => {
         registration_number TEXT UNIQUE NOT NULL,
         daily_rent_price NUMERIC NOT NULL,
         CHECK (daily_rent_price > 0),
-        available_status VARCHAR(20),
-        CHECK (available_status IN ('available', 'booked'))
+        availability_status VARCHAR(20),
+        CHECK (availability_status IN ('available', 'booked'))
         )
         `);
 
