@@ -61,14 +61,19 @@ const updateVehicle = async (id: string, payload: Record<string, unknown>) => {
 
 // delete vehicle [only admin can action]
 const deleteVehicle = async (id: string) => {
-  const booking = await pool.query(
-    `SELECT * FROM bookings WHERE vehicle_id= $1`,
+  const result = await pool.query(
+    `
+    DELETE FROM vehicles 
+    WHERE id=$1 
+      AND availability_status = 'available'
+      AND NOT EXISTS (
+        SELECT * FROM bookings 
+        WHERE vehicle_id=$1 
+        AND status='active'
+      )
+    `,
     [id]
   );
-  if (booking.rows.length !== 0) {
-    return null;
-  }
-  const result = await pool.query(`DELETE FROM vehicles WHERE id=$1`, [id]);
   return result;
 };
 
